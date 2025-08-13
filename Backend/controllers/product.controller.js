@@ -1,33 +1,23 @@
 import Product from "../models/product.model.js";
+import {v2 as cloudinary} from "cloudinary";
 
 //add product :/api/product/add-product
 export const addProduct =async(req,res)=>{
     try{
-    const {name,description,price,offerPrice,category}=req.body;
-    const image = req.files?.map((file)=> file.filename);
-    if(
-        !name||
-        !description||
-        !price||
-        !offerPrice||
-        !category||
-        !image||
-        image.length ===0 
-    ){
-      return res.status(400).json({
-        success:false,
-        message:"All fields including images are required",
-      })
-    }
-      
-
+    let productData =JSON.parse(req.body.productData);
+    const images = req.files
+    let imagesUrl = await Promise.all(
+        images.map(async (item) => {  
+          let result = await cloudinary.uploader.upload(item.path, {
+            resource_type: "image"});
+            return result.secure_url;
+        })
+    )
+   
     await Product.create({
-        name,
-        description,
-        price,
-        offerPrice,
-        category,
-        image,
+        ...productData,
+        images: imagesUrl,
+        seller: req.user._id
     });
     res.status(201).json({message:"Product added successfully",success:true})
     }

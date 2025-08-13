@@ -12,7 +12,7 @@ import cartRouter from './routes/cart.routes.js';
 import orderRouter from './routes/order.routes.js';
 import addressRouter from './routes/address.routes.js';
 import { stripeWebhooks } from './controllers/order.controller.js';
-import { parse } from 'url';
+
 const app = express();
 
 connectDB()
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 //multiple origins Dynamic middleware
-const allowedOrigins = ["http://localhost:5173","https://your-vercel-app.vercel.app"];
+const allowedOrigins = ["http://localhost:5173"];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -42,11 +42,7 @@ app.use(cors({
 app.use('/', (req, res) => {
   res.send('🚀 Server is running!');
 });
-// Export for Vercel
-export default function handler(req, res) {
-  const parsedUrl = parse(req.url, true);
-  app(req, res);
-}
+
 
 app.use('/images',express.static("uploads"));
 app.use("/api/user", userRouter);
