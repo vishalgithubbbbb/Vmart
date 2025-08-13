@@ -39,7 +39,9 @@ app.use(cors({
 }));
 
 //api EndPoint
-
+app.use('/', (req, res) => {
+  res.send('🚀 Server is running!');
+});
 app.use('/images',express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/seller",sellerRouter);
