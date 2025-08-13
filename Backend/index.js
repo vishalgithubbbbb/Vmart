@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { connectDB } from './config/connectdb.js';
 dotenv.config();
-import { connectCLoudinary } from './config/cloudinary.js';
 import userRouter from "./routes/user.routes.js";
 import sellerRouter from "./routes/seller.routes.js";
 import productRouter from './routes/product.routes.js';
@@ -16,7 +15,7 @@ import { stripeWebhooks } from './controllers/order.controller.js';
 const app = express();
 
 connectDB()
-connectCLoudinary()
+
 
 
 app.post('/stripe',express.raw({type:"application/json"}),stripeWebhooks)
@@ -37,11 +36,6 @@ app.use(cors({
   },
   credentials: true
 }));
-
-//api EndPoint
-app.use('/', (req, res) => {
-  res.send('🚀 Server is running!');
-});
 
 
 app.use('/images',express.static("uploads"));

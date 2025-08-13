@@ -118,7 +118,7 @@ export const isAuthUser = async(req,res)=>{
     if(!userId){
         return res.status(401).json({message:"Unauthorized",success:false})
     }
-    const user = await User.findById(userId).select("-password");  
+    const user = await User.findById(userId).select("password");  
     res.json({
         success : true,
         user,

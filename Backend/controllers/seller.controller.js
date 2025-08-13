@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 export const sellerlogin = async(req,res)=>{
  try{
  const {email,password}=req.body;
- if(email===process.env.SELLER_EMAIL && password===process.env.SELLER_PASSWORD){
+ if(email===process.env.SELLER_EMAIL && password === process.env.SELLER_PASSWORD){
    const token = jwt.sign({email},process.env.JWT_SECRET,{expiresIn:"7d"});
   res.cookie("sellerToken", token, {
   httpOnly: true,
