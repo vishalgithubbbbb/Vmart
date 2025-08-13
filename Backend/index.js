@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 //multiple origins Dynamic middleware
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173","https://your-vercel-app.vercel.app"];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
