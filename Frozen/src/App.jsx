@@ -17,8 +17,8 @@ import AddProduct from './Pages/seller/AddProduct'
 import ProductList from './Pages/seller/ProductList'
 import Orders from './Pages/seller/Orders'
 import Loading from './Components/Loading'
-import SellerLayout from './Pages/seller/SellerLayout'
 import Last30Sales from './Pages/seller/Last30Sales'
+import SellerLayout from './Pages/seller/SellerLayout'
 
 
 
