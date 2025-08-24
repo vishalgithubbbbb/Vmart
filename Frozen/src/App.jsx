@@ -16,8 +16,9 @@ import SellerLogin from './Components/seller/SellerLogin'
 import AddProduct from './Pages/seller/AddProduct'
 import ProductList from './Pages/seller/ProductList'
 import Orders from './Pages/seller/Orders'
-import SellerLayout from './Pages/Seller/SellerLayout'
 import Loading from './Components/Loading'
+import SellerLayout from './Pages/seller/SellerLayout'
+import Last30Sales from './Pages/seller/Last30Sales'
 
 
 
@@ -44,12 +45,11 @@ const isSellerPath=useLocation().pathname.includes('seller');
        <Route path="/my-orders" element={<MyOrders />} />
        <Route path="/add-address" element={<AddAddress/>}/>
        <Route path="/loader" element={<Loading/>}/>
-
-
        <Route path="/seller" element={isSeller?<SellerLayout/>:<SellerLogin/>}>
        <Route index element={isSeller ? <AddProduct/> : null}/>
        <Route path='product-list' element={isSeller ? <ProductList/> : null}/>
        <Route path='orders' element={isSeller ? <Orders/> : null}/>
+       <Route path='sales' element={isSeller ? <Last30Sales/> : null}/>
        </Route>
       </Routes>
      </div>

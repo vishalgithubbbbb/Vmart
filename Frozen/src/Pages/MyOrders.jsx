@@ -37,7 +37,7 @@ const MyOrders = () => {
             <p className="flex justify-between items-center gap-6">
               <span>Order ID: {order._id}</span>
               <span>Payment : {order.paymentType}</span>
-              <span>TotalAmount :${order.amount}</span>
+              <span>TotalAmount :₹{order.amount}</span>
 
             </p>
             {order.items.map((item, index) => (
@@ -59,7 +59,7 @@ const MyOrders = () => {
                   <p>Status:{order.status}</p>
                   <p>Date:{new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
-                <p className="text-lg"> Amount:${item.product.offerPrice * item.quantity} </p>
+                <p className="text-lg"> Amount:₹{item.product.offerPrice * item.quantity} </p>
               </div>
             ))}
           </div>

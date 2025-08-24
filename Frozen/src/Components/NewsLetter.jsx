@@ -1,5 +1,3 @@
-import React from 'react'
-
 const NewsLetter = () => {
   return (
     <div className="w-full px-2 text-center text-white py-20 mt-20 flex flex-col items-center justify-center">

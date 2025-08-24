@@ -12,10 +12,12 @@ export const AppContext = createContext(null);
 
 const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
+
+
   // State variables
-  const [user, setUser] = useState(null);
-  const [isSeller, setIsSeller] = useState(null)
-  const [showUserLogin, setShowUserLogin] = useState(false)
+  const [user, setUser] = useState(null);  
+  const [isSeller, setIsSeller] = useState(null) 
+  const [showUserLogin, setShowUserLogin] = useState(false) 
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState({});
@@ -36,6 +38,7 @@ const AppContextProvider = ({ children }) => {
       toast.error(error.message)
     }
   }
+
   //check user status 
   const fetchUser = async () => {
     try {

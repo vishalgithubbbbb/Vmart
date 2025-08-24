@@ -11,13 +11,15 @@ import cartRouter from './routes/cart.routes.js';
 import orderRouter from './routes/order.routes.js';
 import addressRouter from './routes/address.routes.js';
 import { stripeWebhooks } from './controllers/order.controller.js';
+import salesRouter from './routes/sales.routes.js';
+
 
 const app = express();
 
 connectDB()
 
 
-
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.post('/stripe',express.raw({type:"application/json"}),stripeWebhooks)
 
 //middleware
@@ -37,6 +39,9 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(express.static('public'));
+
+
 
 app.use('/images',express.static("uploads"));
 app.use("/api/user", userRouter);
@@ -45,6 +50,7 @@ app.use("/api/product",productRouter);
 app.use("/api/cart",cartRouter);
 app.use("/api/order",orderRouter);
 app.use("/api/address",addressRouter);
+app.use("/api/sales",salesRouter );
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT,()=>{

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { CiSearch } from 'react-icons/ci';
 import { FaShoppingCart } from 'react-icons/fa';
