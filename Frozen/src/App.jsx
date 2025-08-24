@@ -13,12 +13,12 @@ import Footer from './Components/Footer'
 import { Toaster } from 'react-hot-toast'
 import AddAddress from './Pages/AddAddress'
 import SellerLogin from './Components/seller/SellerLogin'
-import AddProduct from './Pages/seller/AddProduct'
-import ProductList from './Pages/seller/ProductList'
-import Orders from './Pages/seller/Orders'
+import AddProduct from './Pages/Seller/AddProduct'
+import ProductList from './Pages/Seller/ProductList'
+import Orders from './Pages/Seller/Orders'
 import Loading from './Components/Loading'
-import Last30Sales from './Pages/seller/Last30Sales'
-import SellerLayout from './Pages/seller/SellerLayout'
+import Last30Sales from './Pages/Seller/Last30Sales'
+import SellerLayout from './Pages/Seller/SellerLayout'
 
 
 
