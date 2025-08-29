@@ -89,3 +89,84 @@ FYCS/
 ## License
 
 MIT
+
+
+
+
+
+
+
+# Project Blackbox Diagram
+
+```
++---------------------------------------------------------------+
+|                        FYCS Project Blackbox                 |
+|---------------------------------------------------------------|
+|                                                               |
+| Inputs:                                                       |
+|   - HTTP requests from users/sellers (Frontend)               |
+|   - API requests from React app (Backend)                     |
+|   - Environment variables (.env files)                        |
+|   - Static assets (images, SVGs, etc.)                        |
+|                                                               |
+| Internal State & Logic:                                       |
+|                                                               |
+|   Backend/                                                    |
+|   ├─ Express server (index.js)                                |
+|   ├─ MongoDB models (models/)                                 |
+|   ├─ Controllers (controllers/)                               |
+|   ├─ Authentication (middlewares/)                            |
+|   ├─ API routes (routes/)                                     |
+|   ├─ File uploads (uploads/)                                  |
+|   ├─ Config (connectdb, multer, etc.)                         |
+|                                                               |
+|   Frozen/                                                     |
+|   ├─ React app entry (main.jsx, App.jsx)                      |
+|   ├─ Context provider (AppContext.jsx)                        |
+|   ├─ UI components (Components/, Pages/)                      |
+|   ├─ Seller dashboard (Pages/Seller/)                         |
+|   ├─ Models for forms/UI (Models/)                            |
+|   ├─ Static assets (assets/)                                  |
+|   ├─ Routing (react-router-dom)                               |
+|                                                               |
+| Outputs:                                                      |
+|   - Dynamic web pages (React frontend)                        |
+|   - REST API responses (JSON from Backend)                    |
+|   - Database updates (MongoDB)                                |
+|   - File uploads (images, etc.)                               |
+|   - Toast notifications (frontend)                            |
+|                                                               |
+| Side Effects:                                                 |
+|   - User authentication and session management                |
+|   - Seller authentication and dashboard                       |
+|   - Product CRUD operations                                   |
+|   - Cart and order management                                 |
+|   - Address management                                        |
+|   - File/image uploads                                        |
+|   - Email/newsletter (if implemented)                         |
+|                                                               |
++---------------------------------------------------------------+
+```
+
+## Explanation
+
+- **Inputs:**  
+  - Users and sellers interact via the React frontend (`Frozen/`), sending requests to the backend (`Backend/`).
+  - Environment variables configure sensitive data and endpoints.
+  - Static assets are used for UI and product images.
+
+- **Internal State & Logic:**  
+  - **Backend:** Handles all business logic, authentication, database operations, and file uploads.
+  - **Frozen (Frontend):** Manages UI, state, routing, and user interactions using React and context.
+
+- **Outputs:**  
+  - Users see dynamic web pages and receive feedback (toasts, navigation).
+  - Backend sends JSON responses and updates the database.
+  - Uploaded files are stored and served as needed.
+
+- **Side Effects:**  
+  - Authentication, CRUD operations, cart/order management, and file uploads are triggered by user actions.
+
+---
+
+This blackbox view abstracts away implementation details and focuses on how data flows through your system and what each part
