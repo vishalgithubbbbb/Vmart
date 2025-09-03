@@ -34,10 +34,10 @@ const Auth = () => {
       setShowUserLogin(false);
       navigate("/");
     } else {
-      toast.error(data.message);
+      toast.error(state === "login" ? "Incorrect userid and password" : data.message);
     }
   } catch (error) {
-    toast.error(error.message);
+      toast.error(state === "login" ? "Incorrect userid and password" : error.message);
   }
 };
         

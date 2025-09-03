@@ -131,24 +131,6 @@ const AppContextProvider = ({ children }) => {
 
   }
 
-
-  //updatecard 
-  useEffect(() => {
-  const updateCart = async () => {
-    try {
-      const response = await axios.post("/api/cart/update", { cartItems });
-
-      if (response?.data?.success) {
-        toast.success(response.data.message);
-      } else {
-        toast.error(response?.data?.message || "Cart update failed.");
-      }
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error.message || "Something went wrong.");
-    }
-  };
-}, [cartItems]);
-
   useEffect(() => {
     fetchProducts();
     fetchSeller();
