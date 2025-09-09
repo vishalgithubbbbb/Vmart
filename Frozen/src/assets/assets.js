@@ -58,13 +58,14 @@ import Dairy from './Dairy.png';
 import Snacks from './Snacks.jpeg';
 import addicon from './add_icon.svg';
 import uploadarea from './upload_area.png'
-
+import sales from './increase.png'
 
 
 export const assets = {
   uploadarea,
    nug,
    colddrink,
+   sales,
    chi,
    extra,
    burger,

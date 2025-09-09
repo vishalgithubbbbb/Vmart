@@ -37,7 +37,7 @@ const Auth = () => {
       toast.error(state === "login" ? "Incorrect userid and password" : data.message);
     }
   } catch (error) {
-      toast.error(state === "login" ? "Incorrect userid and password" : error.message);
+     toast.error(state === "login" ? "Incorrect userid and password" : error.message);
   }
 };
         
