@@ -4,7 +4,7 @@ import { assets } from "../../assets/assets";
 import { NavLink, Outlet } from "react-router-dom";
 
 const SellerLayout = () => {
-   const {isSeller,setIsSeller,navigate}=useContext(AppContext)
+   const {setIsSeller,navigate}=useContext(AppContext)
     const sidebarLinks = [
         { name: "Add Product", path: "/seller", icon: assets.addicon },
         { name: "Product List", path: "/seller/product-list", icon: assets.product_list_icon },
