@@ -2,9 +2,23 @@ import { useContext } from "react";
 import { AppContext } from "../../Context/AppContext";
 import { assets } from "../../assets/assets";
 import { NavLink, Outlet } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const SellerLayout = () => {
-   const {setIsSeller,navigate}=useContext(AppContext)
+   const {setIsSeller,navigate}=useContext(AppContext);
+   const handleSellerLogout = async () => {
+    try {
+      const res = await axios.get("/api/seller/logout");
+      if (res.data.success) {
+        toast.success(res.data.message); // "Seller Logout Successfully"
+        setIsSeller(false);
+        navigate("/seller"); // Redirect to seller login page
+      }
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
     const sidebarLinks = [
         { name: "Add Product", path: "/seller", icon: assets.addicon },
         { name: "Product List", path: "/seller/product-list", icon: assets.product_list_icon },
@@ -18,10 +32,7 @@ const SellerLayout = () => {
               <h1 className="text-orange-500 font-semibold text-3xl tracking-widest uppercase">VMART</h1>
                 <div className="flex items-center gap-5 text-gray-500">
                     <p>Hi! Admin</p>
-                    <button onClick={()=>{
-                     setIsSeller(false);
-                     navigate('/');
-                    }} className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button>
+                    <button onClick={handleSellerLogout} className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button>
                 </div>
             </div>
            <div className="flex">

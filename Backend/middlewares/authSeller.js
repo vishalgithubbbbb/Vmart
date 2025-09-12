@@ -10,7 +10,8 @@ export const authSeller = (req, res, next) => {
     const decoded = jwt.verify(sellerToken, process.env.JWT_SECRET);
     
 
-    if (decoded.email === process.env.SELLER_EMAIL) {
+    if (decoded.email === process.env.SELLER_EMAIL ||
+       decoded.email === process.env.SELLER_EMAIL2 ) {
       return next();
     } else {
       return res.status(401).json({ message: "Unauthorized", success: false });

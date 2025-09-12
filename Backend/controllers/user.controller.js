@@ -81,7 +81,7 @@ export const loginUser = async(req,res)=>{
         success : true,
         user:{
             email: user.email,
-             name: user.name,
+            name: user.name,
 
         },
     });

@@ -4,33 +4,42 @@ import jwt from "jsonwebtoken"
 
 export const sellerlogin = async(req,res)=>{
  try{
- const {email,password}=req.body;
- if(email===process.env.SELLER_EMAIL && password === process.env.SELLER_PASSWORD){
-   const token = jwt.sign({email},process.env.JWT_SECRET,{expiresIn:"7d"});
-  res.cookie("sellerToken", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-   res.status(200).json({message:"Seller Login Successfully",success:true});
- }
- }
- catch(error){
-  console.log("Error in sellerLogin:",error);
-  return res.status(500).json({ message:"Internal server error"});
- }
+ const {email,password} = req.body;
+
+ let isValidSeller = false;  
+   // Check first seller
+    if(email === process.env.SELLER_EMAIL && password === process.env.SELLER_PASSWORD){
+      isValidSeller = true;
+    }
+    // Check second seller
+    if(email === process.env.SELLER_EMAIL2 && password === process.env.SELLER_PASSWORD2){
+      isValidSeller = true;
+    }
+ 
+    if(isValidSeller){
+      const token = jwt.sign({email}, process.env.JWT_SECRET, {expiresIn:"7d"});
+      res.cookie("sellerToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      res.status(200).json({message:"Seller Login Successfully", success:true});
+    } else {
+      res.status(401).json({message:"Invalid seller credentials", success:false});
+    }
+  }
+  catch(error){
+    console.log("Error in sellerLogin:",error);
+    return res.status(500).json({ message:"Internal server error"});
+  }
 }
 
 //logout seller : /api/seller/logout
 
-export const sellerlogout=async(req,res)=>{
+export const sellerlogout = async(req,res)=>{
   try{
-    res.clearCookie("sellerToken",{
-        httpOnly:true, 
-        secure: process.env.NODE_ENV === "production",//use to secure cookies in production
-        sameSite:process.env.NODE_ENV === "production" ? "none":"Strict", //Helps prevent CSRF attacks
-    });
+    res.clearCookie("sellerToken");
     res.status(200).json({message:"Seller Logout Successfully",success: true})
   }
   catch(error){
@@ -53,3 +62,4 @@ export const isAuthSeller = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+

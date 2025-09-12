@@ -28,13 +28,14 @@ const AppContextProvider = ({ children }) => {
     try {
       const { data } = await axios.get("/api/seller/is-auth");
       if (data.success) {
-        setIsSeller(true);
+        setIsSeller(true);  
       }
       else {
         setIsSeller(false);
       }
     }
     catch (error) {
+      setIsSeller(false);
       toast.error(error.message)
     }
   }
@@ -92,7 +93,7 @@ const AppContextProvider = ({ children }) => {
     let cartData = structuredClone(cartItems);
     cartData[itemId] = quantity;
     setCartItems(cartData);
-    toast.success("Cart Updated")
+    toast.success("Cart Updated Successfully")
   }
 
 

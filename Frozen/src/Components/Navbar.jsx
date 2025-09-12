@@ -4,8 +4,26 @@ import { CiSearch } from 'react-icons/ci';
 import { FaShoppingCart } from 'react-icons/fa';
 import { AppContext } from '../Context/AppContext';
 import { assets } from '../assets/assets';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const Navbar = () => {
+  
+  // Add this logout handler
+  const handleUserLogout = async () => {
+    try {
+      const res = await axios.get("/api/user/logout");
+      if (res.data.success) {
+        toast.success(res.data.message); // "User logged out successfully"
+        setUser(null);
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Logout failed");
+      setUser(null);
+      navigate("/");
+    }
+  };
   const [open, setOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const {
@@ -88,7 +106,7 @@ const Navbar = () => {
                   My Orders
                 </li>
                 <li
-                  onClick={() => setUser(null)}
+                  onClick={handleUserLogout}
                   className="p-2 cursor-pointer hover:bg-gray-100"
                 >
                   Logout
@@ -150,7 +168,7 @@ const Navbar = () => {
                   My Orders
                 </li>
                 <li
-                  onClick={() => setUser(null)}
+                  onClick={handleUserLogout}
                   className="p-2 cursor-pointer hover:bg-gray-100"
                 >
                   Logout

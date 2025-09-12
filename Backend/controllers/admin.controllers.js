@@ -3,7 +3,6 @@ import Order from "../models/order.model.js";
 
 //update user cartData: /api/sales/seller 
  export const getSalesData = async (req, res) => {
-   console.log("Sales data endpoint hit"); 
   try {
     const orders = await Order.find();
     const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
