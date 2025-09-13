@@ -60,10 +60,17 @@ export const placeOrderStripe = async (req, res) => {
       });
       amount += product.offerPrice * item.quantity;
     }
-
+  // Add 2% tax
     amount += Math.floor((amount * 2) / 100);
    
-
+   // ✅ Enforce Stripe minimum amount (₹50)
+    if (amount < 50) {
+      return res.status(400).json({
+        success: false,
+        message: "Minimum order amount for online payment is ₹50. Please add more items or choose Cash on Delivery.",
+      });
+    } 
+    
     const order = await Order.create({
       userId, items, address, amount, paymentType: "Online",
     });
