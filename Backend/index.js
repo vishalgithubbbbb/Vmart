@@ -42,7 +42,7 @@ app.use(cors({
 app.use(express.static('public'));
 
 
-
+app.get('/',(req,res)=>res.send("API IS WORKING"))
 app.use('/images',express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/seller",sellerRouter);
