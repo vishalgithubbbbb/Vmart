@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Import routes and controllers
+// Routes & Controllers
 import userRouter from './routes/user.routes.js';
 import sellerRouter from './routes/seller.routes.js';
 import productRouter from './routes/product.routes.js';
@@ -21,9 +21,9 @@ const app = express();
 (async () => {
   try {
     await connectDB();
-    console.log("DB connected");
+    console.log("✅ DB connected");
   } catch (err) {
-    console.error("DB connection failed:", err);
+    console.error("❌ DB connection failed:", err);
   }
 })();
 
@@ -36,7 +36,6 @@ app.use(express.static('public'));
 // Routes
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.post('/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
-app.get('/', (req, res) => res.send("API IS WORKING"));
 app.use('/images', express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/seller", sellerRouter);
@@ -52,7 +51,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-// Export for Vercel
+// Local server start (only in dev)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at   ${PORT}`);
+  });
+}
+
+// Vercel export
 export default function handler(req, res) {
   return app(req, res);
 }
