@@ -18,14 +18,11 @@ import { connectDB } from './config/connectdb.js';
 const app = express();
 
 // Connect to DB
-(async () => {
-  try {
-    await connectDB();
-    console.log("✅ DB connected");
-  } catch (err) {
-    console.error("❌ DB connection failed:", err);
-  }
-})();
+connectDB().then(() => {
+  console.log("✅ DB connected");
+}).catch((err) => {
+  console.error("❌ DB connection failed:", err);
+});
 
 // Middleware
 app.use(express.json());
@@ -34,6 +31,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.static('public'));
 
 // Routes
+app.get('/', (req, res) => res.send('✅ Backend is running'));
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.post('/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
 app.use('/images', express.static("uploads"));
@@ -51,7 +49,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-// Local server start (only in dev)
+// Local dev server (only runs locally)
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
