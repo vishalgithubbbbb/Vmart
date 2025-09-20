@@ -14,28 +14,26 @@ import addressRouter from './routes/address.routes.js';
 import salesRouter from './routes/sales.routes.js';
 import { stripeWebhooks } from './controllers/order.controller.js';
 import { connectDB } from './config/connectdb.js';
-import connectCloudinary from './config/cloudinary.js';
 
 const app = express();
 
-// Connect to Database
-await connectDB();
-
-// Connect to Cloudinary
- await connectCloudinary();
-
-// allowed multiple origins
-const allowedOrigins = ['http://localhost:5173'];
+// Connect to DB
+connectDB().then(() => {
+  console.log("✅ DB connected");
+}).catch((err) => {
+  console.error("❌ DB connection failed:", err);
+});
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: allowedOrigins, credentials: true }));
-
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.static('public'));
 
 // Routes
 app.get('/', (req, res) => res.send('✅ Backend is running successfully'));
 app.post('/stripe', express.raw({ type: "application/json" }), stripeWebhooks);
+app.use('/images', express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/seller", sellerRouter);
 app.use("/api/product", productRouter);
