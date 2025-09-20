@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../Context/AppContext";
 import { Link, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
+import ProductCard from "../Components/ProductCard";
 
 const ProductDetails = () => {
   const { products, navigate, addToCart } = useContext(AppContext);
@@ -12,6 +13,11 @@ const ProductDetails = () => {
     ? products.find((p) => p?._id?.toString() === id?.toString())
     : null;
   
+    const relatedProducts = Array.isArray(products)
+  ? products.filter(
+      (p) => p.category === product.category && p._id !== product._id
+    )
+  : [];
 
   const [thumbnail, setThumbnail] = useState(null);
 
@@ -36,7 +42,7 @@ const ProductDetails = () => {
       {/* Breadcrumb */}
       <p>
         <Link to="/">Home</Link> /
-        <Link to="/products/:category"> Products</Link> /
+        <Link to={`/products/${product.category.toLowerCase()}`}> Products</Link> /
         <Link to={`/product/${product.category.toLowerCase()}/${product._id}`}>
           {product.category}
         </Link> /
@@ -55,7 +61,7 @@ const ProductDetails = () => {
                   onClick={() => setThumbnail(img)}
                   className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
                 >
-                  <img src={`http://localhost:5000/images/${product.image}`} alt={`${product.name} - Thumbnail ${i + 1}`} />
+                  <img src={`http://localhost:5000/images/${img}`} alt={`${product.name} - Thumbnail ${i + 1}`} />
                 </div>
               ))}
           </div>
@@ -123,6 +129,17 @@ const ProductDetails = () => {
             </button>
           </div>
         </div>
+      </div>
+      {/*Related Products */}
+      <div className="flex flex-col items-center mt-20">
+          <div className="flex flex-col items-center w-max">
+            <p className="text-3xl font-medium">Related Products </p>
+            <div className="w-20 h-0.5 bg-red-600 rounded-full mt-2"></div>
+          </div>
+          <div className="my-6 flex flex-wrap gap-8 items-center justify-center">
+            {relatedProducts.filter((product)=>product.instock).map((product,index)=>( <ProductCard key={index} product={product}/>))}
+          </div>
+          <button onClick={()=>{navigate('/products'); scrollTo(0,0)}} className="mx-auto my-12 px-8 py-3 rounded-lg bg-indigo-500 text-white font-medium shadow hover:bg-blue-600 hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">See more</button>
       </div>
     </div>
   );

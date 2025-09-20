@@ -7,7 +7,7 @@ import { categories } from "../assets/assets";
 
 const ProductCategory = () => {
   const { category } = useParams();
-  const{navigate,products}=useContext(AppContext);
+  const{products}=useContext(AppContext);
   const searchCategory = categories.find(
     (item) => item.path.toLowerCase() === category.toLowerCase()
   );
