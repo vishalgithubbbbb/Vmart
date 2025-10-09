@@ -1,7 +1,9 @@
 import BestSeller from "../Components/BestSeller"
+import BottomBanner from "../Components/BottomBanner"
 import Category from "../Components/Category"
 import Hero from "../Components/Hero"
 import NewsLetter from "../Components/NewsLetter"
+
 
 
 const Home = () => {
@@ -10,6 +12,7 @@ const Home = () => {
       <Hero/>
       <Category/>
       <BestSeller/>
+      <BottomBanner/>
       <NewsLetter/>
     </div>
   )

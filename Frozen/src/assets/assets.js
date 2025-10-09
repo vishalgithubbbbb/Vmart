@@ -59,10 +59,16 @@ import Snacks from './Snacks.jpeg';
 import addicon from './add_icon.svg';
 import uploadarea from './upload_area.png'
 import sales from './increase.png'
+import bottombanner from './bottom_banner_image.png'
+import bottombannersm from './bottom_banner_image_sm.png'
+
+
 
 
 export const assets = {
   uploadarea,
+  bottombanner,
+  bottombannersm,
    nug,
    colddrink,
    sales,
