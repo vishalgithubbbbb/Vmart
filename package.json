@@ -1,0 +1,21 @@
+{
+  "name": "frozen",
+  "version": "1.0.0",
+  "description": "This repository contains a fullstack grocery e-commerce platform called **Vmart-Frozen**. It is divided into two main parts:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishalgithubbbbb/Vmart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vishalgithubbbbb/Vmart/issues"
+  },
+  "homepage": "https://github.com/vishalgithubbbbb/Vmart#readme"
+}

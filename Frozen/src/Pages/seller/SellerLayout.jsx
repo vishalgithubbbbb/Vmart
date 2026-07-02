@@ -29,7 +29,7 @@ const SellerLayout = () => {
     return (
         <>
             <div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 bg-white transition-all duration-300">
-              <h1 className="text-orange-500 font-semibold text-3xl tracking-widest uppercase">VMART</h1>
+              <h1 className="text-orange-500 font-semibold text-3xl tracking-widest uppercase">AMart</h1>
                 <div className="flex items-center gap-5 text-gray-500">
                     <p>Hi! Admin</p>
                     <button onClick={handleSellerLogout} className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button>

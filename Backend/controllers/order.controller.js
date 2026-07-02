@@ -1,50 +1,41 @@
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
-import Stripe from 'stripe';
+import Stripe from "stripe";
 import User from "../models/user.model.js";
 
-//Place order COD: /api/order/placeOrder
-
+// Place order COD
 export const placeOrderCOD = async (req, res) => {
   try {
     const userId = req.user;
     const { items, address } = req.body;
     if (!items || !address) {
-      return res.status(400).json({ message: "Items and address are required", success: false });
+      return res.status(400).json({ success: false, message: "Items and address are required" });
     }
+
     let amount = await items.reduce(async (acc, item) => {
       const product = await Product.findById(item.product);
       return (await acc) + product.offerPrice * item.quantity;
     }, 0);
 
-    //Add text charge 2%
-    amount += Math.floor((amount * 2) / 100);
-    await Order.create({
-      userId, items, address, amount, paymentType: "COD", isPaid: false,
-    });
-    res.status(201).json({
-      message: "Order placed Successfully",
-      success: true,
-    })
+    amount += Math.floor((amount * 2) / 100); // 2% tax
+    await Order.create({ userId, items, address, amount, paymentType: "COD", isPaid: false });
+
+    res.status(201).json({ success: true, message: "Order placed successfully" });
+  } catch (error) {
+    console.error("COD order error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
-  catch (error) {
-    console.log("Error fetching user orders:", error);
-    res.status(500).json({ message: "Internal server Error" })
-  }
-}
+};
 
-
-//Place order Stripe: /api/order/stripe
-
+// Place order Stripe
 export const placeOrderStripe = async (req, res) => {
   try {
     const userId = req.user;
     const { items, address } = req.body;
     const { origin } = req.headers;
 
-
     if (!items || !address || items.length === 0) {
-      return res.status(400).json({ message: "Items and address are required", success: false });
+      return res.status(400).json({ success: false, message: "Items and address are required" });
     }
 
     let productData = [];
@@ -52,165 +43,103 @@ export const placeOrderStripe = async (req, res) => {
     for (const item of items) {
       const product = await Product.findById(item.product);
       if (!product) throw new Error(`Product not found: ${item.product}`);
-  
-      productData.push({
-        name: product.name,
-        price: product.offerPrice,
-        quantity: item.quantity,
-      });
+      productData.push({ name: product.name, price: product.offerPrice, quantity: item.quantity });
       amount += product.offerPrice * item.quantity;
     }
-  // Add 2% tax
-    amount += Math.floor((amount * 2) / 100);
-   
-   // ✅ Enforce Stripe minimum amount (₹50)
+
+    amount += Math.floor((amount * 2) / 100); // 2% tax
     if (amount < 50) {
       return res.status(400).json({
         success: false,
-        message: "Minimum order amount for online payment is ₹50. Please add more items or choose Cash on Delivery.",
+        message: "Minimum order amount for online payment is ₹50. Please add more items or choose COD.",
       });
-    } 
-    
-    const order = await Order.create({
-      userId, items, address, amount, paymentType: "Online",
-    });
+    }
 
-    //Stripe Gateway Initilaize
+    const order = await Order.create({ userId, items, address, amount, paymentType: "Online", isPaid: false });
+
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    //create line items for stripe
     const line_items = productData.map((item) => ({
       price_data: {
-        currency: 'inr',
-        product_data: {name: item.name},
-        unit_amount: Math.floor(item.price + item.price * 0.02)*100
+        currency: "inr",
+        product_data: { name: item.name },
+        unit_amount: Math.floor(item.price + item.price * 0.02) * 100,
       },
       quantity: item.quantity,
     }));
-   
-    //create session
+
     const session = await stripeInstance.checkout.sessions.create({
       line_items,
       mode: "payment",
       success_url: `${origin}/loader?next=my-orders`,
       cancel_url: `${origin}/cart`,
-      metadata: {
-        orderId: order._id.toString(),
-        userId,
-      }
+      metadata: { orderId: order._id.toString(), userId },
     });
-    
-    return res.json({
-      success: true,
-      url: session.url
-    });
-  }
-  catch (error) {
-    console.error("Stripe order error:", error.message, error.stack);
+
+    return res.json({ success: true, url: session.url });
+  } catch (error) {
+    console.error("Stripe order error:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
-}  
+};
 
+// Stripe Webhooks
+export const stripeWebhooks = async (req, res) => {
+  const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const sig = req.headers["stripe-signature"];
+  let event;
 
-//Stripe Webhooks to Verify Payment Action : /stripe
-export const stripeWebhooks = async (request,response)=>{
- //Stripe Gateway Initialize 
- const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-const sig = req.headers["stripe-signature"];
-let event;
-try{
-  event = stripeInstance.webhooks.constructEvent(
-    request.body,
-    sig,
-    process.env.STRIPE_WEBHOOK_SECRET
-  );
-}
-catch(error){
-  response.status(400).send(`Webhook Error: ${error.message}`)
-}
-
-//Handle the event
-
-switch(event.type){
-  case "payment_intent.succeeded":{
-    const paymentIntent = event.data.object;
-    const paymentIntentId = paymentIntent.id
-
-    //Getting Session Metadata
-    const session = await stripeInstance.checkout.sessions.list({
-      payment_intent:paymentIntentId,
-    });
-    const {orderId,userId} = session.data[0].metadata;
-    
-    //Mark Payment as Paid
-    await Order.findByIdAndUpdate(orderId,{isPaid:true})
-
-    //Clear user cart
-    await User.findByIdAndUpdate(userId, {cartItems:{}});
-    break;
-
+  try {
+    event = stripeInstance.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (error) {
+    return res.status(400).send(`Webhook Error: ${error.message}`);
   }
-    case "payment_intent.succeeded":{
-    const paymentIntent = event.data.object;
-    const paymentIntentId = paymentIntent.id
 
-    //Getting Session Metadata
-    const session = await stripeInstance.checkout.sessions.list({
-      payment_intent:paymentIntentId,
-    });
-    const {orderId} = session.data[0].metadata;
-    await Order.findByIdAndDelete(orderId)
-    break;
+  switch (event.type) {
+    case "payment_intent.succeeded": {
+      const paymentIntent = event.data.object;
+      const paymentIntentId = paymentIntent.id;
+      const session = await stripeInstance.checkout.sessions.list({ payment_intent: paymentIntentId });
+      const { orderId, userId } = session.data[0].metadata;
 
+      await Order.findByIdAndUpdate(orderId, { isPaid: true, status: "Paid" });
+      await User.findByIdAndUpdate(userId, { cartItems: {} });
+      break;
     }
+    default:
+      console.error(`Unhandled event type ${event.type}`);
+      break;
+  }
 
-   default:
-    console.error(`Unhandled event type ${event.type}`)
-    break;
-}
-response.json({received : true});
+  res.json({ received: true });
+};
 
-}
-
-//order details for individual user :/api/order/user
-
+// Get user orders
 export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user;
-    const orders = await Order.find({
-      userId,
-      $or: [{ paymentType: "COD" }, { isPaid: true }],
-    }).populate("items.product").populate("address").sort({ createdAt: -1 });
-    res.status(200).json({
-      success: true,
-      orders,
-    })
-  }
-  catch (error) {
-    console.error("Error fetching user orders:", error);
-    res.status(500).json({ message: "Internal server Error" });
-  }
-}
-
-//get all orders for admin :/api/order/seller
-
-export const getAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.find({
-      $or: [{ paymentType: "COD" }, { isPaid: false }]
-    })
+    const orders = await Order.find({ userId })
       .populate("items.product")
       .populate("address")
       .sort({ createdAt: -1 });
 
-
-    res.status(200).json({
-      success: true,
-      orders,
-    });
+    res.status(200).json({ success: true, orders });
   } catch (error) {
     console.error("Error fetching user orders:", error);
-    res.status(500).json({ message: "Internal server Error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// Get all orders for admin
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate("items.product")
+      .populate("address")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching all orders:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
