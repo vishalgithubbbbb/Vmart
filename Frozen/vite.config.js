@@ -8,15 +8,14 @@ export default defineConfig({
       react(),
        tailwindcss()
   ], 
-
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:5000',
-      changeOrigin: true,
-      secure: false,
+  base: './', // <--- ADD THIS LINE HERE TO FIX THE IMAGE PATHS
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
     }
   }
-}
-   
 })
