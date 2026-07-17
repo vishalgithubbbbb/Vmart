@@ -61,7 +61,8 @@ import uploadarea from './upload_area.png'
 import sales from './increase.png'
 import bottombanner from './bottom_banner_image.png'
 import bottombannersm from './bottom_banner_image_sm.png'
-
+import bottom from './bottom.png'
+import image from './image.png'
 
 
 
@@ -129,6 +130,8 @@ export const assets = {
   add_address_iamge,
   box_icon,
   bannersm,
+  bottom,
+  image
 };
 
 export const categories = [

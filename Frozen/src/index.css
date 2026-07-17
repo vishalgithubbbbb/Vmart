@@ -10,13 +10,31 @@
         @apply w-0 group-hover:w-[300px] transition-all duration-300
         rounded-full group-hover:border group-hover:border-gray-500
         px-3 py-1 focus:outline-none dark:border-gray-800;
-
     }
 }
 
 @theme{
- 
---color-brandYellow: #fdc62e,
+  --color-brandYellow: #fdc62e;
+}
 
-      
+
+/* ==========================================
+   Remove Chrome Autofill Blue Background
+========================================== */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill{
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+
+    -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
+
+    border-radius: inherit;
+
+    transition: background-color 9999s ease-in-out 0s;
 }

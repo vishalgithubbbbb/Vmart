@@ -1,28 +1,109 @@
+import { useState } from "react";
 import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const [hovered, setHovered] = useState(null);
+
+  const handleShopHover = () => {
+    setHovered("shop");
+  };
+
+  const handleExploreHover = () => {
+    setHovered("explore");
+  };
+
+  const handleLeave = () => {
+    setHovered(null);
+  };
+
   return (
-    <div className="relative w-full overflow-hidden">
-      <img src={assets.banner} alt="banner" className="w-full object-cover md:block hidden" />
-      <img src={assets.bannersmm} alt="banner" className=" object-cover md:hidden w-full " />
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-10 md:px-20 py-8">
-        <h2 className="text-[clamp(1rem,3vw,2rem)] mb-4 tracking-wide uppercase text-white  md:text-black text-center max-w-[90%]">
-          Shop smarter, eat fresher.
-        </h2>
+    <section className="relative w-full overflow-hidden">
+      {/* Desktop Banner */}
+      <img
+        src={assets.image}
+        alt="banner"
+        className="hidden md:block w-full h-[70vh] object-cover"
+      />
 
-        <h1 className="text-[clamp(2rem,5vw,5rem)] font-bold mb-6 text-white uppercase text-center  md:text-black leading-tight max-w-[95%]">
-          Start your grocery <br />
-          <span className="block md:text-black">journey now.</span>
-        </h1>
+      {/* Mobile Banner */}
+      <img
+        src={assets.bannersmm}
+        alt="banner"
+        className="md:hidden w-full h-[60vh] object-cover"
+      />
 
-        <div className="flex flex-wrap justify-center gap-4 mt-6 font-medium">
-          <Link to='/products' className="bg-green-400 flex group items-center text-black cursor-pointer uppercase rounded-lg font-bold py-3 px-6  hover:bg-green-600">Shop Now<img src={assets.white_arrow_icon} alt="" className="md:hidden transition group-focus:translate-x-1" /></Link> 
-          <Link to='/products' className="hidden bg-green-400 md:flex group items-center text-black cursor-pointer uppercase font-bold py-3 px-6 rounded-lg hover:bg-green-600 ">Explore Deals<img src={assets.white_arrow_icon} alt="" className="md:hidden transition group-focus:translate-x-1" /></Link> 
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20"></div>
+
+      {/* Hero Content */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center px-6 max-w-4xl">
+
+          <p className="uppercase tracking-[6px] text-white font-semibold mb-5">
+            Premium Frozen Foods
+          </p>
+
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
+            Fresh Food
+            <br />
+            <span className="text-green-400">Delivered Daily</span>
+          </h1>
+
+          <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-8">
+            Discover premium frozen foods, snacks, beverages and daily essentials
+            delivered fresh to your doorstep.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex justify-center gap-6 mt-10 flex-wrap">
+
+            {/* Shop Now */}
+<Link
+  to="/products"
+  onMouseEnter={handleShopHover}
+  onMouseLeave={handleLeave}
+  className={`flex items-center gap-3 px-8 py-4 rounded-full font-bold border-2 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:scale-105
+    ${
+      hovered === "explore"
+        ? "bg-white text-green-600 border-white"
+        : hovered === "shop"
+        ? "bg-green-500 text-white border-green-500"
+        : "bg-green-500 text-white border-green-500"
+    }`}
+>
+  Shop Now
+  <span className="text-xl transition-transform duration-300 hover:translate-x-2">
+    →
+  </span>
+</Link>
+
+{/* Explore Products */}
+<Link
+  to="/products"
+  onMouseEnter={handleExploreHover}
+  onMouseLeave={handleLeave}
+  className={`flex items-center gap-3 px-8 py-4 rounded-full font-bold border-2 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:scale-105
+    ${
+      hovered === "explore"
+        ? "bg-green-500 text-white border-green-500"
+        : hovered === "explore"
+        ? "bg-white text-green-600 border-white"
+        : "bg-white text-green-600 border-white"
+    }`}
+>
+  Explore Products
+  <span className="text-xl transition-transform duration-300 hover:translate-x-2">
+    →
+  </span>
+</Link>
+
+
+          </div>
 
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
