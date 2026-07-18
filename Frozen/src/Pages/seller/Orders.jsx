@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
   const { axios } = useContext(AppContext);
+  const [updating, setUpdating] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -20,6 +21,52 @@ const SellerOrders = () => {
     }
   };
 
+  // Update order status
+  const updateStatus = async (orderId, status) => {
+
+    try {
+
+      setUpdating(orderId);
+
+
+      const { data } = await axios.post(
+        "/api/order/update-status",
+        {
+          orderId,
+          status,
+          message: `Your order is ${status}`
+        }
+      );
+
+
+      if (data.success) {
+
+        toast.success("Order status updated");
+
+        fetchOrders();
+
+      } else {
+
+        toast.error(data.message);
+
+      }
+
+
+    } catch (error) {
+
+      toast.error("Status update failed");
+      console.log(error);
+
+    }
+    finally {
+
+      setUpdating(null);
+
+    }
+
+  };
+
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -30,9 +77,8 @@ const SellerOrders = () => {
       {orders.map((order, index) => (
         <div
           key={index}
-          className={`flex flex-col md:grid md:grid-cols-[2fr_1fr_1fr_1fr] md:items-center gap-5 p-5 max-w-4xl rounded-md border ${
-            !order?.address ? "border-red-400 bg-red-50" : "border-gray-300"
-          } text-gray-800`}
+          className={`flex flex-col md:grid md:grid-cols-[2fr_1fr_1fr_1fr] md:items-center gap-5 p-5 max-w-4xl rounded-md border ${!order?.address ? "border-red-400 bg-red-50" : "border-gray-300"
+            } text-gray-800`}
         >
           {/* Product Info */}
           <div className="flex gap-5">
@@ -50,9 +96,8 @@ const SellerOrders = () => {
                 <p key={idx} className="font-medium">
                   {item?.product?.name || "Product unavailable"}{" "}
                   <span
-                    className={`text-indigo-500 ${
-                      item?.quantity < 2 && "hidden"
-                    }`}
+                    className={`text-indigo-500 ${item?.quantity < 2 && "hidden"
+                      }`}
                   >
                     x {item?.quantity || 0}
                   </span>
@@ -97,6 +142,70 @@ const SellerOrders = () => {
             </p>
             <p>Payment: {order?.isPaid ? "Paid" : "Pending"}</p>
           </div>
+
+          {/* Tracking Status */}
+
+          <div className="flex flex-col gap-2">
+
+
+            <p className="font-medium">
+              Status:
+            </p>
+
+
+            <select
+
+              value={order.status}
+
+              onChange={(e) =>
+                updateStatus(order._id, e.target.value)
+              }
+
+              className="border rounded px-2 py-1"
+
+            >
+
+              <option>
+                Order Placed
+              </option>
+
+              <option>
+                Pending Payment
+              </option>
+
+              <option>
+                Paid
+              </option>
+
+              <option>
+                Shipped
+              </option>
+
+              <option>
+                Delivered
+              </option>
+
+              <option>
+                Cancelled
+              </option>
+
+
+            </select>
+
+
+
+            {updating === order._id && (
+
+              <p className="text-xs text-blue-500">
+                Updating...
+              </p>
+
+            )}
+
+
+          </div>
+
+
         </div>
       ))}
     </div>

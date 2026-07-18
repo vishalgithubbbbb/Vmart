@@ -1,97 +1,332 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AppContext } from "../Context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const MyOrders = () => {
+
   const [myOrders, setMyOrders] = useState([]);
+
   const { axios, user } = useContext(AppContext);
+
+  const navigate = useNavigate();
+
+
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("/api/order/user");
-      if (data.success) {
+
+      const {data} = await axios.get("/api/order/user");
+
+      if(data.success){
         setMyOrders(data.orders);
-      } else {
+      }
+      else{
         toast.error(data.message);
       }
-    } catch (error) {
+
+    } catch(error){
+
       toast.error(error.message);
+
     }
   };
 
-  useEffect(() => {
-    if (user) {
+
+
+  useEffect(()=>{
+
+    if(user){
       fetchOrders();
     }
-  }, [user]);
+
+  },[user]);
+
+
+
+
+  const getStatusStyle=(status)=>{
+
+    if(status==="Delivered")
+      return "from-green-500 to-green-600";
+
+    if(status==="Shipped")
+      return "from-blue-500 to-blue-600";
+
+    if(status==="Paid")
+      return "from-purple-500 to-purple-600";
+
+    if(status==="Cancelled")
+      return "from-red-500 to-red-600";
+
+    return "from-yellow-500 to-orange-500";
+
+  };
+
+
 
   return (
-    <div className="mt-12 pb-16">
-      <div>
-        <p className="text-2xl font-medium md:text-3xl">My Orders</p>
-      </div>
 
-      {myOrders.map((order, index) => (
-        <div
-          key={index}
-          className="my-8 border border-gray-300 rounded-lg mb-10 p-4 py-5 max-w-4xl"
-        >
-          <p className="flex justify-between items-center gap-6">
-            <span>Order ID: {order?._id}</span>
-            <span>Payment : {order?.paymentType}</span>
-            <span>TotalAmount : ₹{order?.amount}</span>
-          </p>
+<div className="mt-12 pb-20 px-4">
 
-          {order?.items?.map((item, idx) => (
-            <div
-              key={idx}
-              className={`relative bg-white text-gray-800 ${
-                order.items.length !== idx + 1 && "border-b"
-              } border-gray-300 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 w-full max-w-4xl`}
-            >
-              <div className="flex items-center mb-4 md:mb-0">
-                <div className="p-4 rounded-lg">
-                  <img
-                    src={
-                      item?.product?.image
-                        ? `http://localhost:5000/images/${item.product.image}`
-                        : "/placeholder.png"
-                    }
-                    alt={item?.product?.name || "No product"}
-                    className="w-16 h-16"
-                  />
-                </div>
-                <div className="ml-4">
-                  <h2 className="text-xl font-medium">
-                    {item?.product?.name || "Product unavailable"}
-                  </h2>
-                  <p>{item?.product?.category || "Unknown category"}</p>
-                </div>
-              </div>
 
-              <div className="text-lg font-medium">
-                <p>Quantity: {item?.quantity || 0}</p>
-                <p>Status: {order?.status || "N/A"}</p>
-                <p>
-                  Date:{" "}
-                  {order?.createdAt
-                    ? new Date(order.createdAt).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
+<h1 className="text-3xl font-semibold mb-10">
+My Orders
+</h1>
 
-              <p className="text-lg">
-                Amount: ₹
-                {item?.product?.offerPrice
-                  ? item.product.offerPrice * (item?.quantity || 0)
-                  : 0}
-              </p>
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+
+
+{
+myOrders.length===0 ?
+
+(
+<p className="text-gray-500 text-center">
+No orders found
+</p>
+)
+
+:
+
+(
+
+myOrders.map((order,index)=>(
+
+
+<div
+
+key={index}
+
+className="max-w-5xl mx-auto mb-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition duration-300 overflow-hidden"
+
+>
+
+
+
+{/* TOP HEADER */}
+
+<div className="bg-gray-50 p-5 flex flex-col md:flex-row justify-between gap-5">
+
+
+<div>
+
+<p className="text-sm text-gray-500">
+Order ID
+</p>
+
+<p className="font-medium text-sm break-all">
+{order._id}
+</p>
+
+</div>
+
+
+
+<div>
+
+<p className="text-sm text-gray-500">
+Payment
+</p>
+
+<span className="inline-block mt-1 px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-600">
+
+{order.paymentType}
+
+</span>
+
+</div>
+
+
+
+
+<div>
+
+<p className="text-sm text-gray-500">
+Total Amount
+</p>
+
+<p className="text-xl font-semibold">
+₹{order.amount}
+</p>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+{/* STATUS SECTION */}
+
+<div className="p-5 flex flex-col md:flex-row justify-between items-center gap-5">
+
+
+<div>
+
+<p className="text-sm text-gray-500 mb-2">
+Current Status
+</p>
+
+
+<span
+
+className={`px-5 py-2 rounded-full text-white bg-gradient-to-r ${getStatusStyle(order.status)} font-medium shadow`}
+
+>
+
+{order.status}
+
+</span>
+
+
+</div>
+
+
+
+
+
+<button
+
+onClick={()=>navigate(`/track-order/${order._id}`)}
+
+className="px-7 py-3 rounded-xl bg-black text-white hover:bg-gray-800 transition flex items-center gap-2"
+
+>
+
+🚚 Track Order
+
+</button>
+
+
+</div>
+
+
+
+
+
+{/* PRODUCTS */}
+
+
+<div className="px-5 pb-5 space-y-4">
+
+
+{
+
+order.items.map((item,idx)=>(
+
+
+<div
+
+key={idx}
+
+className="flex flex-col sm:flex-row items-center justify-between gap-5 p-4 rounded-xl border hover:border-indigo-300 transition"
+
+>
+
+
+<div className="flex items-center gap-5">
+
+
+<img
+
+src={
+item?.product?.image?.[0]
+?
+`http://localhost:5000/images/${item.product.image[0]}`
+:
+"/placeholder.png"
+}
+
+className="w-20 h-20 rounded-xl object-cover"
+
+/>
+
+
+
+<div>
+
+<h2 className="font-semibold text-lg">
+
+{item?.product?.name || "Product unavailable"}
+
+</h2>
+
+
+<p className="text-gray-500">
+
+Quantity : {item.quantity}
+
+</p>
+
+
+<p className="text-sm text-gray-400">
+
+{
+new Date(order.createdAt)
+.toLocaleDateString()
+}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div className="text-right">
+
+<p className="text-xl font-semibold">
+
+₹
+{
+item?.product?.offerPrice
+?
+item.product.offerPrice * item.quantity
+:
+0
+}
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+))
+
+}
+
+
+</div>
+
+
+
+</div>
+
+
+))
+
+)
+
+}
+
+
+
+</div>
+
   );
 };
+
 
 export default MyOrders;

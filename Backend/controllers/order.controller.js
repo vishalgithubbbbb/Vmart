@@ -18,8 +18,21 @@ export const placeOrderCOD = async (req, res) => {
     }, 0);
 
     amount += Math.floor((amount * 2) / 100); // 2% tax
-    await Order.create({ userId, items, address, amount, paymentType: "COD", isPaid: false });
+    await Order.create({ 
+  userId, 
+  items, 
+  address, 
+  amount, 
+  paymentType: "COD", 
+  isPaid: false,
 
+  trackingHistory:[
+    {
+      status:"Order Placed",
+      message:"Your order has been placed successfully"
+    }
+  ]
+});
     res.status(201).json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("COD order error:", error);
@@ -55,7 +68,21 @@ export const placeOrderStripe = async (req, res) => {
       });
     }
 
-    const order = await Order.create({ userId, items, address, amount, paymentType: "Online", isPaid: false });
+    const order = await Order.create({ 
+  userId, 
+  items, 
+  address, 
+  amount, 
+  paymentType:"Online", 
+  isPaid:false,
+
+  trackingHistory:[
+    {
+      status:"Order Placed",
+      message:"Your order has been created. Waiting for payment."
+    }
+  ]
+});
 
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
     const line_items = productData.map((item) => ({
@@ -101,7 +128,19 @@ export const stripeWebhooks = async (req, res) => {
       const session = await stripeInstance.checkout.sessions.list({ payment_intent: paymentIntentId });
       const { orderId, userId } = session.data[0].metadata;
 
-      await Order.findByIdAndUpdate(orderId, { isPaid: true, status: "Paid" });
+      await Order.findByIdAndUpdate(
+orderId,
+{
+  isPaid:true,
+  status:"Paid",
+
+  $push:{
+    trackingHistory:{
+      status:"Paid",
+      message:"Payment received successfully"
+    }
+  }
+});
       await User.findByIdAndUpdate(userId, { cartItems: {} });
       break;
     }
@@ -142,4 +181,140 @@ export const getAllOrders = async (req, res) => {
     console.error("Error fetching all orders:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
+}; 
+
+//monthly sales report
+export const monthlySales = async (req, res) => {
+  try {
+    const sales = await Order.aggregate([
+      {
+        $match: {
+          status: "Delivered"
+        }
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" }
+          },
+          totalSales: {
+            $sum: "$amount"
+          },
+          totalOrders: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      sales
+    });
+
+  } catch (error) {
+    res.json({
+      success:false,
+      message:error.message
+    });
+  }
+};
+
+
+// Update order tracking status
+
+export const updateOrderStatus = async(req,res)=>{
+
+try{
+
+const {orderId,status,message}=req.body;
+
+
+const order = await Order.findById(orderId);
+
+
+if(!order){
+ return res.status(404).json({
+ success:false,
+ message:"Order not found"
+ });
+}
+
+
+
+order.status=status;
+
+
+order.trackingHistory.push({
+ status,
+ message
+});
+
+
+await order.save();
+
+
+
+res.json({
+success:true,
+message:"Order status updated",
+order
+});
+
+
+}catch(error){
+
+res.status(500).json({
+success:false,
+message:error.message
+})
+
+}
+
+};
+
+
+export const trackOrder = async(req,res)=>{
+
+try{
+
+const {orderId}=req.params;
+
+
+const order = await Order.findById(orderId)
+.populate("items.product")
+.populate("address");
+
+
+if(!order){
+return res.status(404).json({
+success:false,
+message:"Order not found"
+});
+}
+
+
+res.json({
+success:true,
+tracking:order.trackingHistory,
+status:order.status
+});
+
+
+}catch(error){
+
+res.status(500).json({
+success:false,
+message:error.message
+});
+
+}
+
 };

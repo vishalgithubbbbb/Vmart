@@ -1,147 +1,289 @@
-import { useEffect, useState, useContext } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { AppContext } from '../../Context/AppContext';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js';
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../Context/AppContext";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import CountUp from "react-countup";
+
+import {
+  FaShoppingCart,
+  FaMoneyBillWave,
+  FaCreditCard,
+  FaTruck,
+  FaCheckCircle,
+  FaClock,
+  FaTimesCircle,
+} from "react-icons/fa";
+
+import StatCard from "./Dashboard/StatCard";
+import RevenueChart from "./Dashboard/RevenueChart";
+import OrdersChart from "./Dashboard/OrdersChart";
+import OrderStatusChart from "./Dashboard/OrderStatusChart";
+import PaymentChart from "./Dashboard/PaymentChart";
+import ExportCSV from "./Dashboard/ExportCSV";
+
 
 const Last30Sales = () => {
-  const [salesData, setSalesData] = useState(null);
-  const [error, setError] = useState('');
+
   const { axios } = useContext(AppContext);
 
+  const [loading, setLoading] = useState(true);
+
+  const [dashboard, setDashboard] = useState({});
+
   useEffect(() => {
-    axios.get("http://localhost:5000/api/sales/seller")
-      .then(res => {
-        console.log('Sales Data:', res.data);
-        setSalesData(res.data);
-      })
-      .catch(err => {
-        console.error("AxiosError:", err);
-        setError('Failed to load sales data');
-      });
+
+    fetchDashboard();
+
   }, []);
 
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!salesData) return <p>Loading sales data...</p>;
+  const fetchDashboard = async () => {
+
+    try {
+
+      const { data } = await axios.get("/api/sales/seller");
+
+      setDashboard(data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  if (loading) {
+
+    return (
+
+      <div className="flex justify-center items-center h-screen">
+
+        <h1 className="text-xl font-semibold">
+          Loading Dashboard...
+        </h1>
+
+      </div>
+
+    );
+
+  }
 
   const {
-    monthlyRevenue = {},
-    dailyRevenue = {},
+
     totalOrders = 0,
+
     totalRevenue = 0,
-    totalPaidOrders = 0,
-    totalUnpaidOrders = 0,
+
+    onlineOrders = 0,
+
+    offlineOrders = 0,
+
     totalPaidRevenue = 0,
-    totalUnpaidRevenue = 0
-  } = salesData;
 
-  const monthlyChartData = {
-    labels: Object.keys(monthlyRevenue),
-    datasets: [{
-      label: 'Monthly Revenue',
-      data: Object.values(monthlyRevenue),
-      backgroundColor: '#875cf5'
-    }]
-  };
+    totalUnpaidRevenue = 0,
 
-  const last30DaysLabels = Object.keys(dailyRevenue).slice(-30);
-  const last30DaysValues = Object.values(dailyRevenue).slice(-30);
+    orderPlaced = 0,
 
-  const dailyChartData = {
-    labels: last30DaysLabels,
-    datasets: [
-      {
-        type: 'bar',
-        label: 'Daily Revenue (Bar)',
-        data: last30DaysValues,
-        backgroundColor: '#f59e42'
-      },
-      {
-        type: 'line',
-        label: 'Daily Revenue (Line)',
-        data: last30DaysValues,
-        borderColor: '#3b82f6',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.3,
-        pointRadius: 3,
-        pointBackgroundColor: '#3b82f6'
-      }
-    ]
-  };
+    pendingPayment = 0,
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: false },
-      tooltip: {
-        mode: 'index',
-        intersect: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: value => `₹${value}`
-        }
-      }
-    }
-  };
+    shipped = 0,
+
+    delivered = 0,
+
+    cancelled = 0,
+
+    dailyRevenue = {},
+
+    dailyOrders = {},
+
+    recentOrders = []
+
+  } = dashboard;
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="border rounded-lg shadow-md bg-white p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-indigo-700">🧊 VMART Seller Dashboard</h2>
 
-        {/* 🔢 Summary Stats */}
-        <div className="border rounded-md p-4 bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">📊 Summary</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-800">
-            <div className="border p-3 rounded-md bg-white">Total Orders: <strong>{totalOrders}</strong></div>
-            <div className="border p-3 rounded-md bg-white">Total Revenue: <strong>₹{totalRevenue}</strong></div>
-            <div className="border p-3 rounded-md bg-white">Paid Orders: <strong>{totalPaidOrders}</strong></div>
-            <div className="border p-3 rounded-md bg-white">Unpaid Orders: <strong>{totalUnpaidOrders}</strong></div>
-            <div className="border p-3 rounded-md bg-white">Paid Revenue: <strong>₹{totalPaidRevenue}</strong></div>
-            <div className="border p-3 rounded-md bg-white">Unpaid Revenue: <strong>₹{totalUnpaidRevenue}</strong></div>
-          </div>
+    <div className="min-h-screen bg-white p-8">
+
+      {/* Header */}
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+
+        <div>
+
+          <h1 className="text-3xl font-bold text-gray-800">
+
+            Seller Dashboard
+
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+
+            Sales Analytics & Performance Overview
+
+          </p>
+
         </div>
 
-        {/* 📅 Monthly Revenue Chart */}
-        <div className="border rounded-md p-4 bg-gray-50">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">📅 Monthly Revenue</h3>
-          <Bar data={monthlyChartData} options={chartOptions} />
+        <div className="mt-4 md:mt-0">
+
+          <ExportCSV
+
+            recentOrders={recentOrders}
+
+            totalOrders={totalOrders}
+
+            totalRevenue={totalRevenue}
+
+          />
+
         </div>
 
-        {/* 📆 Daily Revenue Chart */}
-        <div className="border rounded-md p-4 bg-gray-50">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">📆 Daily Revenue Chart </h3>
-          <Bar data={dailyChartData} options={chartOptions} />
-        </div>
       </div>
-    </div>
+
+      {/* Stats Cards */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        
+              <StatCard
+          title="Total Orders"
+          value={<CountUp end={totalOrders} duration={2} />}
+          subtitle="All customer orders"
+          icon={<FaShoppingCart className="text-white text-2xl" />}
+          color="bg-blue-600"
+        />
+
+        <StatCard
+          title="Revenue"
+          value={`₹${totalRevenue}`}
+          subtitle="Total sales generated"
+          icon={<FaMoneyBillWave className="text-white text-2xl" />}
+          color="bg-green-600"
+        />
+
+        <StatCard
+          title="Online Orders"
+          value={<CountUp end={onlineOrders} duration={2} />}
+          subtitle={`Revenue ₹${totalPaidRevenue}`}
+          icon={<FaCreditCard className="text-white text-2xl" />}
+          color="bg-purple-600"
+        />
+
+        <StatCard
+          title="COD Orders"
+          value={<CountUp end={offlineOrders} duration={2} />}
+          subtitle={`Pending ₹${totalUnpaidRevenue}`}
+          icon={<FaMoneyBillWave className="text-white text-2xl" />}
+          color="bg-orange-500"
+        />
+
+        <StatCard
+          title="Delivered"
+          value={<CountUp end={delivered} duration={2} />}
+          subtitle="Successfully delivered"
+          icon={<FaCheckCircle className="text-white text-2xl" />}
+          color="bg-green-500"
+        />
+
+        <StatCard
+          title="Shipped"
+          value={<CountUp end={shipped} duration={2} />}
+          subtitle="Orders in transit"
+          icon={<FaTruck className="text-white text-2xl" />}
+          color="bg-cyan-500"
+        />
+
+        <StatCard
+          title="Pending"
+          value={<CountUp end={pendingPayment} duration={2} />}
+          subtitle="Awaiting processing"
+          icon={<FaClock className="text-white text-2xl" />}
+          color="bg-yellow-500"
+        />
+
+        <StatCard
+          title="Cancelled"
+          value={<CountUp end={cancelled} duration={2} />}
+          subtitle="Cancelled by customer"
+          icon={<FaTimesCircle className="text-white text-2xl" />}
+          color="bg-red-500"
+        />
+
+      </div>
+
+      {/* Revenue Chart */}
+
+      <div className="mt-8">
+
+        <RevenueChart
+          dailyRevenue={dailyRevenue}
+        />
+
+      </div>
+            {/* Orders Chart */}
+
+      <div className="mt-8">
+
+        <OrdersChart
+          dailyOrders={dailyOrders}
+        />
+
+      </div>
+
+      {/* Status & Payment */}
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
+
+        <OrderStatusChart
+          orderPlaced={orderPlaced}
+          pendingPayment={pendingPayment}
+          shipped={shipped}
+          delivered={delivered}
+          cancelled={cancelled}
+        />
+
+        <PaymentChart
+          onlineOrders={onlineOrders}
+          offlineOrders={offlineOrders}
+        />
+
+      </div>
+
+      {/* Dashboard Footer */}
+
+      <div className="mt-10 border-t pt-6">
+
+        <div className="flex flex-col md:flex-row justify-between items-center">
+
+          <div>
+
+            <h3 className="text-lg font-semibold text-orange-500">
+              VMART Seller Analytics
+            </h3>
+
+            <p className="text-gray-500 text-sm mt-1">
+              Monitor your revenue, orders and payment performance from one place.
+            </p>
+
+          </div>
+
+          <div className="mt-4 md:mt-0 text-sm text-gray-500">
+
+            Last Updated :
+            {" "}
+            {new Date().toLocaleString("en-IN")}
+
+          </div>
+
+        </div>
+
+      </div>
+          </div>
+
   );
+
 };
 
-export default Last30Sales;
+export default Last30Sales; 

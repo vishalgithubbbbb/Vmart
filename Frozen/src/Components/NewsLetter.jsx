@@ -13,7 +13,7 @@ const NewsLetter = () => {
         {/* Main Heading */}
         <h1 className="mt-4 text-4xl md:text-6xl font-extrabold leading-tight text-gray-900">
           Get Weekly
-          <span className="block mt-1.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent">
+          <span className="block mt-1.5 bg-gradient-to-r from-green-500 via-green-500 to-green-500 bg-clip-text text-transparent">
             Exclusive Updates
           </span>
         </h1>
@@ -52,7 +52,7 @@ const NewsLetter = () => {
             {/* Button */}
             <button
               type="submit"
-              className="mt-2 sm:mt-0 sm:ml-2 px-10 py-4 rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-white font-semibold whitespace-nowrap transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="mt-2 sm:mt-0 sm:ml-2 px-10 py-4 rounded-full bg-gradient-to-r from-green-600 via-green-600 to-green-600 text-white font-semibold whitespace-nowrap transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               Subscribe now
             </button>

@@ -32,6 +32,7 @@ const orderSchema = new mongoose.Schema(
       ref: "Address",
     },
 
+
     status: {
       type: String,
       enum: [
@@ -45,20 +46,46 @@ const orderSchema = new mongoose.Schema(
       default: "Order Placed",
     },
 
+
+    // 🔥 NEW TRACKING SYSTEM
+    trackingHistory: [
+      {
+        status: {
+          type: String,
+          required: true,
+        },
+
+        message: {
+          type: String,
+          default: "",
+        },
+
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+
     paymentType: {
       type: String,
       enum: ["COD", "Online"],
       required: true,
     },
 
+
     isPaid: {
       type: Boolean,
       required: true,
       default: false,
     },
+
   },
   { timestamps: true }
 );
 
+
 const Order = mongoose.model("Order", orderSchema);
+
 export default Order;
