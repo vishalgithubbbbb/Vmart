@@ -63,12 +63,13 @@ import bottombanner from './bottom_banner_image.png'
 import bottombannersm from './bottom_banner_image_sm.png'
 import bottom from './bottom.png'
 import image from './image.png'
-
+import newsletter from './newsletter.png'
 
 
 export const assets = {
   uploadarea,
   bottombanner,
+  newsletter,
   bottombannersm,
    nug,
    colddrink,

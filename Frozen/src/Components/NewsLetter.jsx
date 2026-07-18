@@ -1,6 +1,34 @@
+import { useContext, useState } from "react";
 import { Mail } from "lucide-react";
+import { AppContext } from "../Context/AppContext";
+import toast from "react-hot-toast";
+
 
 const NewsLetter = () => {
+  const { axios } = useContext(AppContext);
+  const [email, setEmail] = useState("");
+  const handleSubscribe = async (e) => {
+  e.preventDefault();
+
+  try {
+    const { data } = await axios.post(
+      "/api/newsletter/subscribe",
+      { email }
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+      setEmail("");
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+  console.log(error);
+  console.log(error.response);
+
+  toast.error(error.response?.data?.message || error.message);
+}
+};
   return (
     <section className="w-full mt-28 md:mt-32 mb-28 md:mb-28 px-6 lg:px-6">
       <div className="max-w-4xl mx-auto text-center">
@@ -26,7 +54,7 @@ const NewsLetter = () => {
         </p>
 
         {/* Newsletter Form */}
-        <form className="mt-8 max-w-3xl mx-auto">
+        <form onSubmit={handleSubscribe} className="mt-8 max-w-3xl mx-auto">
 
           <div className="flex flex-col sm:flex-row items-center rounded-full border border-gray-200 p-2.5 shadow-md hover:shadow-xl transition-all duration-300">
 
@@ -39,10 +67,12 @@ const NewsLetter = () => {
               />
 
               <input
-                type="email"  
-                name="email"
-                autoComplete="email"
-                placeholder="Enter your email address"
+               id="newsletter-email"
+  name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
                 required
                 className="flex-1 bg-transparent px-4 py-4 outline-none text-gray-700 placeholder:text-gray-400"
               />

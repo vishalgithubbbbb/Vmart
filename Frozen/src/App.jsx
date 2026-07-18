@@ -20,6 +20,7 @@ import Loading from './Components/Loading';
 import Last30Sales from './Pages/Seller/Last30Sales';
 import SellerLayout from './Pages/Seller/SellerLayout';
 import TrackOrder from "./Pages/TrackOrder";
+import Subscribers from "./pages/Seller/Subscribers";
 
 
 
@@ -51,6 +52,7 @@ const isSellerPath=useLocation().pathname.includes('seller');
        <Route index element={isSeller ? <AddProduct/> : null}/>
        <Route path='product-list' element={isSeller ? <ProductList/> : null}/>
        <Route path='orders' element={isSeller ? <Orders/> : null}/>
+       <Route path="/seller/subscribers" element={<Subscribers />} />
        <Route path='sales' element={isSeller ? <Last30Sales/> : null}/>
        </Route>
       </Routes>

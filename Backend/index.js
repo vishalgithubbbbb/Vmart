@@ -14,6 +14,8 @@ import addressRouter from './routes/address.routes.js';
 import salesRouter from './routes/sales.routes.js';
 import { stripeWebhooks } from './controllers/order.controller.js';
 import { connectDB } from './config/connectdb.js';
+import newsletterRouter from "./routes/newsletter.routes.js";
+
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/sales", salesRouter);
+app.use("/api/newsletter", newsletterRouter);
 
 // Error handler
 app.use((err, req, res, next) => {

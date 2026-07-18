@@ -73,7 +73,7 @@ const Navbar = () => {
 
           <h1 className="text-3xl font-extrabold tracking-widest uppercase transition-all duration-300 group-hover:scale-105">
 
-            <span className="text-orange-500">V</span>
+            <span className="text-orange-500">AV</span>
 
             <span className="text-gray-800">Mart</span>
 
@@ -273,9 +273,8 @@ const Navbar = () => {
 
         <div className="relative">
           <input
-            value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            type="text"
+              value={typeof searchQuery === "string" ? searchQuery : ""}
             placeholder="Search here..."
             className="w-full rounded-full border border-gray-300 py-2 pl-4 pr-10 outline-none focus:border-orange-500"
           />

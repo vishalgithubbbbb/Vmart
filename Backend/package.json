@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0",
     "multer": "^2.0.2",
+    "nodemailer": "^9.0.3",
     "nodemon": "^3.1.10",
     "recharts": "^3.9.2",
     "serve-favicon": "^2.5.1",

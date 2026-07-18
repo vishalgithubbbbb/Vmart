@@ -18,21 +18,20 @@ export const placeOrderCOD = async (req, res) => {
     }, 0);
 
     amount += Math.floor((amount * 2) / 100); // 2% tax
-    await Order.create({ 
-  userId, 
-  items, 
-  address, 
-  amount, 
-  paymentType: "COD", 
-  isPaid: false,
 
-  trackingHistory:[
-    {
-      status:"Order Placed",
-      message:"Your order has been placed successfully"
-    }
-  ]
-});
+    await Order.create({
+      userId,
+      items,
+      address,
+      amount,
+      paymentType: "COD",
+      isPaid: false,
+      status: "Order Placed",
+      trackingHistory: [
+        { status: "Order Placed", message: "Your order has been placed successfully." }
+      ]
+    });
+
     res.status(201).json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("COD order error:", error);
@@ -64,32 +63,29 @@ export const placeOrderStripe = async (req, res) => {
     if (amount < 50) {
       return res.status(400).json({
         success: false,
-        message: "Minimum order amount for online payment is ₹50. Please add more items or choose COD.",
+        message: "Minimum order amount for online payment is ₹50. Please add more items or choose COD."
       });
     }
 
-    const order = await Order.create({ 
-  userId, 
-  items, 
-  address, 
-  amount, 
-  paymentType:"Online", 
-  isPaid:false,
-
-  trackingHistory:[
-    {
-      status:"Order Placed",
-      message:"Your order has been created. Waiting for payment."
-    }
-  ]
-});
+    const order = await Order.create({
+      userId,
+      items,
+      address,
+      amount,
+      paymentType: "Online",
+      isPaid: false,
+      status: "Order Placed",
+      trackingHistory: [
+        { status: "Order Placed", message: "Your order has been placed successfully." }
+      ]
+    });
 
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
     const line_items = productData.map((item) => ({
       price_data: {
         currency: "inr",
         product_data: { name: item.name },
-        unit_amount: Math.floor(item.price + item.price * 0.02) * 100,
+        unit_amount: Math.floor(item.price * 100), // price in paise, no double tax
       },
       quantity: item.quantity,
     }));
@@ -122,26 +118,22 @@ export const stripeWebhooks = async (req, res) => {
   }
 
   switch (event.type) {
-    case "payment_intent.succeeded": {
-      const paymentIntent = event.data.object;
-      const paymentIntentId = paymentIntent.id;
-      const session = await stripeInstance.checkout.sessions.list({ payment_intent: paymentIntentId });
-      const { orderId, userId } = session.data[0].metadata;
+    case "checkout.session.completed": {
+      const session = event.data.object;
+      const { orderId, userId } = session.metadata;
 
-      await Order.findByIdAndUpdate(
-orderId,
-{
-  isPaid:true,
-  status:"Paid",
+      await Order.findByIdAndUpdate(orderId, {
+        isPaid: true,
+        $push: {
+          trackingHistory: {
+            status: "Processing",
+            message: "Payment received. Your order is now being processed."
+          }
+        },
+        status: "Processing"
+      });
 
-  $push:{
-    trackingHistory:{
-      status:"Paid",
-      message:"Payment received successfully"
-    }
-  }
-});
-      await User.findByIdAndUpdate(userId, { cartItems: {} });
+      await User.findByIdAndUpdate(userId, { cartItems: [] }); // clear cart
       break;
     }
     default:
@@ -168,7 +160,7 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-// Get all orders for admin
+// Get all orders (admin only)
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
@@ -181,140 +173,135 @@ export const getAllOrders = async (req, res) => {
     console.error("Error fetching all orders:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
-}; 
+};
 
-//monthly sales report
+// Monthly sales report
 export const monthlySales = async (req, res) => {
   try {
+
     const sales = await Order.aggregate([
-      {
-        $match: {
-          status: "Delivered"
-        }
-      },
+
       {
         $group: {
+
           _id: {
             month: { $month: "$createdAt" },
             year: { $year: "$createdAt" }
           },
+
           totalSales: {
             $sum: "$amount"
           },
+
           totalOrders: {
             $sum: 1
           }
+
         }
       },
+
       {
         $sort: {
           "_id.year": 1,
           "_id.month": 1
         }
       }
+
     ]);
 
+    const months = [
+      "",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    const formatted = sales.map(item => ({
+
+      month: months[item._id.month],
+
+      totalSales: item.totalSales,
+
+      totalOrders: item.totalOrders
+
+    }));
+
     res.json({
+
       success: true,
-      sales
+
+      sales: formatted
+
     });
 
   } catch (error) {
-    res.json({
-      success:false,
-      message:error.message
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
     });
+
   }
 };
 
-
 // Update order tracking status
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
 
-export const updateOrderStatus = async(req,res)=>{
+    const allowedStatus = ["Order Placed", "Processing", "Packed", "Shipped", "Delivered", "Cancelled"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
 
-try{
+    const messages = {
+      "Order Placed": "Your order has been placed successfully.",
+      "Processing": "Seller has started processing your order.",
+      "Packed": "Your order has been packed carefully.",
+      "Shipped": "Your order has been shipped and is on the way.",
+      "Delivered": "Order delivered successfully.",
+      "Cancelled": "Your order has been cancelled."
+    };
 
-const {orderId,status,message}=req.body;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
+    order.status = status;
+    order.trackingHistory.push({ status, message: messages[status] });
+    await order.save();
 
-const order = await Order.findById(orderId);
-
-
-if(!order){
- return res.status(404).json({
- success:false,
- message:"Order not found"
- });
-}
-
-
-
-order.status=status;
-
-
-order.trackingHistory.push({
- status,
- message
-});
-
-
-await order.save();
-
-
-
-res.json({
-success:true,
-message:"Order status updated",
-order
-});
-
-
-}catch(error){
-
-res.status(500).json({
-success:false,
-message:error.message
-})
-
-}
-
+    res.json({ success: true, message: "Order status updated", order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+// Track order
+export const trackOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId).populate("items.product").populate("address");
 
-export const trackOrder = async(req,res)=>{
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-try{
-
-const {orderId}=req.params;
-
-
-const order = await Order.findById(orderId)
-.populate("items.product")
-.populate("address");
-
-
-if(!order){
-return res.status(404).json({
-success:false,
-message:"Order not found"
-});
-}
-
-
-res.json({
-success:true,
-tracking:order.trackingHistory,
-status:order.status
-});
-
-
-}catch(error){
-
-res.status(500).json({
-success:false,
-message:error.message
-});
-
-}
-
+    res.json({ success: true, tracking: order.trackingHistory, status: order.status });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

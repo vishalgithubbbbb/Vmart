@@ -6,7 +6,8 @@ import {
   placeOrderCOD, 
   placeOrderStripe,
   updateOrderStatus,
-  trackOrder
+  trackOrder,
+  monthlySales
 } from "../controllers/order.controller.js";
 
 import { authUser } from "../middlewares/authUser.js";
@@ -59,11 +60,15 @@ router.post(
 
 
 
-/*
-=====================
- SELLER ROUTES
-=====================
-*/
+//=====================
+// SELLER ROUTES
+//=====================
+router.get(
+  "/monthly-sales",
+  authSeller,
+  monthlySales
+);
+
 
 
 // Get all orders

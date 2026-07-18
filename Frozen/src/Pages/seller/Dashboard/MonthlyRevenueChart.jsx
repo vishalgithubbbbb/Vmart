@@ -1,61 +1,106 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell,
+} from "recharts";
+
 const MonthlyRevenueChart = () => {
+  const [sales, setSales] = useState([]);
 
- const [sales,setSales] = useState([]);
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const { data } = await axios.get("/api/order/monthly-sales");
 
- useEffect(()=>{
+        if (data.success) {
+          setSales(data.sales);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-  const fetchSales = async()=>{
+    fetchSales();
+  }, []);
 
-   const {data} = await axios.get(
-    "/api/order/monthly-sales"
-   );
+  const chartData = sales.map((item) => ({
+    month: item.month,
+    revenue: item.totalSales,
+    orders: item.totalOrders,
+  }));
 
-   if(data.success){
-    setSales(data.sales);
-   }
+  const colors = [
+    "#3B82F6",
+    "#10B981",
+    "#F59E0B",
+    "#8B5CF6",
+    "#EF4444",
+    "#06B6D4",
+    "#22C55E",
+    "#EC4899",
+    "#6366F1",
+    "#14B8A6",
+    "#F97316",
+    "#84CC16",
+  ];
 
-  }
+  return (
+    <div className="bg-white rounded-2xl shadow-md border p-6">
 
-  fetchSales();
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Monthly Sales
+        </h2>
 
- },[]);
+        <p className="text-gray-500">
+          Revenue generated month-wise
+        </p>
+      </div>
 
+      <div className="h-[420px]">
 
- return (
-  <div>
+        <ResponsiveContainer width="100%" height="100%">
 
-   <h2 className="text-xl font-bold">
-     Monthly Sales
-   </h2>
+          <BarChart data={chartData}>
 
-   {
-    sales.map((item,index)=>(
+            <CartesianGrid strokeDasharray="3 3" />
 
-     <div key={index}>
+            <XAxis dataKey="month" />
 
-      Month:
-      {item._id.month}
+            <YAxis />
 
-      <br/>
+            <Tooltip
+              formatter={(value) => [`₹${value}`, "Revenue"]}
+            />
 
-      Sales:
-      ₹{item.totalSales}
+            <Bar
+              dataKey="revenue"
+              radius={[10, 10, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={index}
+                  fill={colors[index % colors.length]}
+                />
+              ))}
+            </Bar>
 
-      <br/>
+          </BarChart>
 
-      Orders:
-      {item.totalOrders}
+        </ResponsiveContainer>
 
-     </div>
+      </div>
 
-    ))
-   }
-
-  </div>
- )
-}
+    </div>
+  );
+};
 
 export default MonthlyRevenueChart;

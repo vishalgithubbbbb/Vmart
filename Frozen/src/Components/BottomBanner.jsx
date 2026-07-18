@@ -1,6 +1,10 @@
 import { features } from "../assets/assets";
+import { useContext } from "react";
+import { AppContext } from "../Context/AppContext";
 
 const BottomBanner = () => {
+  const { navigate } = useContext(AppContext);
+
   return (
     <section className="mt-20 px-4 sm:px-6 lg:px-8">
       <div className="relative max-w-7xl mx-auto overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-50 via-green-100 to-lime-50 shadow-xl">
@@ -13,26 +17,21 @@ const BottomBanner = () => {
 
           {/* Heading */}
           <div className="text-center max-w-3xl mx-auto">
-
             <span className="inline-block bg-green-600 text-white text-sm font-medium px-4 py-1 rounded-full mb-4">
               ⭐ Why Customers Love Us
             </span>
-
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
               Fresh Frozen Foods,
               <span className="text-green-600"> Delivered Better.</span>
             </h2>
-
             <p className="mt-4 text-gray-600 text-lg">
               Experience premium quality frozen products with fast delivery,
               secure payments and customer-first service.
             </p>
-
           </div>
 
           {/* Features */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -43,22 +42,22 @@ const BottomBanner = () => {
                   alt={feature.title}
                   className="w-12 h-12 mx-auto mb-4"
                 />
-
-                <h3 className="font-bold text-gray-900">
-                  {feature.title}
-                </h3>
-
-                <p className="text-sm text-gray-500 mt-2">
-                  {feature.description}
-                </p>
+                <h3 className="font-bold text-gray-900">{feature.title}</h3>
+                <p className="text-sm text-gray-500 mt-2">{feature.description}</p>
               </div>
             ))}
-
           </div>
 
           {/* CTA */}
           <div className="flex justify-center mt-10">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold transition duration-300 shadow-lg hover:shadow-xl">
+            <button
+              aria-label="Explore products"
+              onClick={() => {
+                navigate("/products");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold transition duration-300 shadow-lg hover:shadow-xl"
+            >
               Explore Products →
             </button>
           </div>

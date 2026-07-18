@@ -30,7 +30,7 @@ const Footer = () => {
           <div className="flex items-center gap-3 group">
             {/* Removed the orange V box */}
             <h1 className="text-3xl font-extrabold tracking-widest uppercase transition-all duration-300 group-hover:scale-105">
-              <span className="text-orange-500">V</span>
+              <span className="text-orange-500">AV</span>
               <span className="text-gray-800">Mart</span>
             </h1>
           </div>
