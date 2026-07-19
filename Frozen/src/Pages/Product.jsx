@@ -6,17 +6,19 @@ const Product = () => {
   const { products, searchQuery } = useContext(AppContext);
   const [filterProducts, setFilterProducts] = useState([]);
 
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      setFilterProducts(
-        products.filter((product) =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    } else {
-      setFilterProducts(products);
-    }
-  }, [products, searchQuery]);
+useEffect(() => {
+  const query = searchQuery.trim().toLowerCase();
+
+  if (query) {
+    setFilterProducts(
+      products.filter((product) =>
+        product.name.toLowerCase().includes(query)
+      )
+    );
+  } else {
+    setFilterProducts(products);
+  }
+}, [products, searchQuery]);
 
   const availableProducts = filterProducts.filter((product) => product.instock);
 

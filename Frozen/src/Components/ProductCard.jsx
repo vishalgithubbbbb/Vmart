@@ -5,9 +5,9 @@ import { assets } from "../assets/assets";
 
 const ProductCard = ({ product }) => {
 
-    const {navigate,addToCart,cartItems,removeFromCart} = useContext(AppContext);
-  return product && (
-        <div onClick={()=>{
+    const { navigate, addToCart, cartItems, removeFromCart } = useContext(AppContext);
+    return product && (
+        <div onClick={() => {
             navigate(`/product/${product.category.toLowerCase()}/${product._id}`)
         }} className="border border-gray-500/20 rounded-md  md:px-4 px-3 py-2 bg-white min-w-60 max-w-60 w-full">
             <div className="group cursor-pointer flex items-center justify-center px-2 ">
@@ -16,12 +16,12 @@ const ProductCard = ({ product }) => {
             <div className="text-gray-500/60 text-sm">
                 <p>{product.category}</p>
                 <p className="text-gray-700 font-medium text-lg truncate w-full">{product.name}</p>
-                <div className="flex items-center gap-0.5">     
+                <div className="flex items-center gap-0.5">
                     {Array(5).fill('').map((_, i) => (
-                        <img key={i} src={i < 4 ? assets.star_icon: assets.star_dull_icon}
-                        alt="rating"
-                        className="w-3 md:w-3.5"
-                         />  
+                        <img key={i} src={i < 4 ? assets.star_icon : assets.star_dull_icon}
+                            alt="rating"
+                            className="w-3 md:w-3.5"
+                        />
                     ))}
                     <p>(4)</p>
                 </div>
@@ -29,11 +29,17 @@ const ProductCard = ({ product }) => {
                     <p className="md:text-xl text-base font-medium text-indigo-500">
                         ₹{product.offerPrice} <span className="text-gray-500/60 md:text-sm text-xs line-through">₹{product.price}</span>
                     </p>
-                    <div className="text-indigo-500" onClick={(e)=>e.stopPropagation()}>
+                    <div className="text-indigo-500" onClick={(e) => e.stopPropagation()}>
                         {!cartItems?.[product._id] ? (
                             <button className="flex items-center justify-center gap-1 bg-indigo-100 border border-indigo-300 md:w-[80px] w-[64px] h-[34px] rounded text-indigo-600 font-medium" onClick={() => addToCart(product._id)} >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#615fff" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path
+                                        d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0"
+                                        stroke="#615fff"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                    />
                                 </svg>
                                 Add
                             </button>

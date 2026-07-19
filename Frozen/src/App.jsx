@@ -20,7 +20,7 @@ import Loading from './Components/Loading';
 import Last30Sales from './Pages/Seller/Last30Sales';
 import SellerLayout from './Pages/Seller/SellerLayout';
 import TrackOrder from "./Pages/TrackOrder";
-import Subscribers from "./pages/Seller/Subscribers";
+import Subscribers from "./Pages/Seller/Subscribers";
 
 
 
