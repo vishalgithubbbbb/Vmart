@@ -11,7 +11,7 @@ const ProductCard = ({ product }) => {
             navigate(`/product/${product.category.toLowerCase()}/${product._id}`)
         }} className="border border-gray-500/20 rounded-md  md:px-4 px-3 py-2 bg-white min-w-60 max-w-60 w-full">
             <div className="group cursor-pointer flex items-center justify-center px-2 ">
-                <img className="group-hover:scale-105 transition w-38 h-38 " src={`http://localhost:5000/images/${product.image}`} alt={product.name} />
+                <img className="group-hover:scale-105 transition w-38 h-38 " src={`${import.meta.env.VITE_BACKEND_URL}/images/${product.image?.[0]}`} alt={product.name} />
             </div>
             <div className="text-gray-500/60 text-sm">
                 <p>{product.category}</p>

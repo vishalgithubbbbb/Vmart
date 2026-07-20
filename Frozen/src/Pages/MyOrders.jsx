@@ -99,7 +99,7 @@ const MyOrders = () => {
                     <img
                       src={
                         item?.product?.image?.[0]
-                          ? `http://localhost:5000/images/${item.product.image[0]}`
+                          ? `${import.meta.env.VITE_BACKEND_URL}/images/${item.product.image}`
                           : "/placeholder.png"
                       }
                       alt={item?.product?.name || "Product"}

@@ -73,7 +73,8 @@ const SellerOrders = () => {
               className="w-12 h-12 object-cover opacity-60"
               src={
                 order?.items?.[0]?.product?.image?.[0]
-                  ? `http://localhost:5000/images/${order.items[0].product.image[0]}`
+                  ? `${import.meta.env.VITE_BACKEND_URL}/images/${order.items[0].product.image[0]}`
+
                   : "/placeholder.png"
               }
               alt={order?.items?.[0]?.product?.name || "No product"}

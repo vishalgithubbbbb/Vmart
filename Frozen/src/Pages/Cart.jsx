@@ -393,7 +393,8 @@ const Cart = () => {
 
                                                 <img
 
-                                                    src={`http://localhost:5000/images/${product.image}`}
+                                                    src={`${import.meta.env.VITE_BACKEND_URL}/images/${product.image?.[0]}`}
+
 
                                                     alt={product.name}
 
