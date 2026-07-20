@@ -6,7 +6,7 @@ import transporter from "../config/nodemailer.js";
 export const addProduct = async (req, res) => {
   try {
     const { name, description, price, offerPrice, category } = req.body;
-    const image = req.files?.map((file) => file.filename);
+    const image = req.files?.map((file) => file.location);
 
     if (!name || !description || !price || !offerPrice || !category || !image || image.length === 0) {
       return res.status(400).json({ success: false, message: "All fields including images are required" });
@@ -16,7 +16,7 @@ export const addProduct = async (req, res) => {
 
     // Notify subscribers
     const subscribers = await Subscriber.find({}, "email");
-    const imageUrl = `http://localhost:5000/images/${product.image[0]}`;
+    const imageUrl = product.image[0]; 
     const discount = Math.round(((product.price - product.offerPrice) / product.price) * 100);
 
     for (const subscriber of subscribers) {
@@ -53,7 +53,7 @@ export const addProduct = async (req, res) => {
                   </span>
                 </div>
                 <div style="margin-top:35px;text-align:center;">
-                  <a href="http://localhost:5173/product/${encodeURIComponent(product.category.toLowerCase())}/${product._id}" 
+                  <a href="http://food.vishdelivers.shop/product/${encodeURIComponent(product.category.toLowerCase())}/${product._id}" 
                      style="background:#16a34a;color:white;padding:16px 45px;border-radius:8px;font-size:18px;font-weight:bold;text-decoration:none;">
                     🛒 Shop Now
                   </a>
