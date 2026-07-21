@@ -1,2 +1,14 @@
-node_modules
+
+node_modules/
+
+# Environment files
 .env
+Backend/.env
+Frozen/.env
+
+# Uploads
+Backend/uploads/
+
+# Build folders
+dist/
+build/

@@ -53,7 +53,7 @@ export const addProduct = async (req, res) => {
                   </span>
                 </div>
                 <div style="margin-top:35px;text-align:center;">
-                  <a href="http://food.vishdelivers.shop/product/${encodeURIComponent(product.category.toLowerCase())}/${product._id}" 
+                  <a href="https://food.vishdelivers.shop/product/${encodeURIComponent(product.category.toLowerCase())}/${product._id}" 
                      style="background:#16a34a;color:white;padding:16px 45px;border-radius:8px;font-size:18px;font-weight:bold;text-decoration:none;">
                     🛒 Shop Now
                   </a>
