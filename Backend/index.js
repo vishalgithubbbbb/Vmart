@@ -29,7 +29,7 @@ connectDB().then(() => {
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "https://food.vishdelivers.shop", credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.static('public'));
 
 // Routes
@@ -52,10 +52,12 @@ app.use((err, req, res, next) => {
 });
 
 // Local dev server (only runs locally)
-app.listen(5000, "0.0.0.0", () => {
-  console.log("🚀 Backend running on port 5000");
-});
-
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at ${PORT}`);
+  });
+}
 
 // ✅ Vercel-compatible export
 export default app;
